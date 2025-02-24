@@ -2,8 +2,7 @@ import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 
 import styles from './ArticleParamsForm.module.scss';
-import { useState, FormEvent } from 'react';
-import clsx from 'clsx';
+import { useState, FormEvent, useRef } from 'react';
 import { Text } from 'src/ui/text';
 import { Select } from 'src/ui/select';
 import {
@@ -25,17 +24,18 @@ export type ArticleParamsFormProps = {
 export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	const { setAppState } = props;
 	const [isOpened, setIsOpened] = useState<boolean>(false);
-	const [formState, setFormState] =
+	const [formValues, setFormValues] =
 		useState<ArticleStateType>(defaultArticleState);
+	const sidebarRef = useRef<HTMLDivElement>(null);
 
 	const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		setAppState(formState);
+		setAppState(formValues);
 	};
 
-	const handleChange = (fieldName: string) => {
+	const handleFormFieldChange = (fieldName: string) => {
 		return (value: OptionType) => {
-			setFormState((currentFormState) => ({
+			setFormValues((currentFormState) => ({
 				...currentFormState,
 				[fieldName]: value,
 			}));
@@ -43,8 +43,16 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	};
 	const handleFormReset = (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		setFormState(defaultArticleState);
+		setFormValues(defaultArticleState);
 		setAppState(defaultArticleState);
+	};
+
+	const handleOverlayClick = () => {
+		setIsOpened(false);
+	};
+
+	const handleSidebarClick = (e: React.MouseEvent) => {
+		e.stopPropagation();
 	};
 
 	return (
@@ -54,10 +62,16 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 				onClick={() => setIsOpened((currentIsOpened) => !currentIsOpened)}
 			/>
 			<div
-				onClick={() => setIsOpened(false)}
-				className={clsx(styles.overlay, isOpened && styles.overlay_open)}></div>
+				onClick={handleOverlayClick}
+				className={`${styles.overlay} ${
+					isOpened ? styles.overlay_open : ''
+				}`}></div>
 			<aside
-				className={clsx(styles.container, isOpened && styles.container_open)}>
+				ref={sidebarRef}
+				className={`${styles.container} ${
+					isOpened ? styles.container_open : ''
+				}`}
+				onClick={handleSidebarClick}>
 				<form
 					className={styles.form}
 					onSubmit={handleFormSubmit}
@@ -67,35 +81,35 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 					</Text>
 					<Select
 						title='Шрифт'
-						selected={formState.fontFamilyOption}
+						selected={formValues.fontFamilyOption}
 						options={fontFamilyOptions}
-						onChange={handleChange('fontFamilyOption')}
+						onChange={handleFormFieldChange('fontFamilyOption')}
 					/>
 					<RadioGroup
 						title='Размер шрифта'
 						name='fontSizeOptions'
 						options={fontSizeOptions}
-						selected={formState.fontSizeOption}
-						onChange={handleChange('fontSizeOption')}
+						selected={formValues.fontSizeOption}
+						onChange={handleFormFieldChange('fontSizeOption')}
 					/>
 					<Select
 						title='Цвет шрифта'
-						selected={formState.fontColor}
+						selected={formValues.fontColor}
 						options={fontColors}
-						onChange={handleChange('fontColor')}
+						onChange={handleFormFieldChange('fontColor')}
 					/>
 					<Separator />
 					<Select
 						title='Цвет фона'
-						selected={formState.backgroundColor}
+						selected={formValues.backgroundColor}
 						options={fontColors}
-						onChange={handleChange('backgroundColor')}
+						onChange={handleFormFieldChange('backgroundColor')}
 					/>
 					<Select
 						title='Ширина контента'
-						selected={formState.contentWidth}
+						selected={formValues.contentWidth}
 						options={contentWidthArr}
-						onChange={handleChange('contentWidth')}
+						onChange={handleFormFieldChange('contentWidth')}
 					/>
 					<div className={styles.bottomContainer}>
 						<Button title='Сбросить' htmlType='reset' type='clear' />
