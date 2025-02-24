@@ -23,7 +23,7 @@ export type ArticleParamsFormProps = {
 
 export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	const { setAppState } = props;
-	const [isOpened, setIsOpened] = useState<boolean>(false);
+	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const [formValues, setFormValues] =
 		useState<ArticleStateType>(defaultArticleState);
 	const sidebarRef = useRef<HTMLDivElement>(null);
@@ -48,7 +48,7 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	};
 
 	const handleOverlayClick = () => {
-		setIsOpened(false);
+		setIsMenuOpen(false);
 	};
 
 	const handleSidebarClick = (e: React.MouseEvent) => {
@@ -58,18 +58,18 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 	return (
 		<>
 			<ArrowButton
-				isOpen={isOpened}
-				onClick={() => setIsOpened((currentIsOpened) => !currentIsOpened)}
+				isOpen={isMenuOpen}
+				onClick={() => setIsMenuOpen((currentIsOpened) => !currentIsOpened)}
 			/>
 			<div
 				onClick={handleOverlayClick}
 				className={`${styles.overlay} ${
-					isOpened ? styles.overlay_open : ''
+					isMenuOpen ? styles.overlay_open : ''
 				}`}></div>
 			<aside
 				ref={sidebarRef}
 				className={`${styles.container} ${
-					isOpened ? styles.container_open : ''
+					isMenuOpen ? styles.container_open : ''
 				}`}
 				onClick={handleSidebarClick}>
 				<form
