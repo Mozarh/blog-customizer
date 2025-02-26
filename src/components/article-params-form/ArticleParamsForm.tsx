@@ -2,7 +2,7 @@ import { ArrowButton } from 'src/ui/arrow-button';
 import { Button } from 'src/ui/button';
 
 import styles from './ArticleParamsForm.module.scss';
-import { useState, FormEvent, useRef } from 'react';
+import { useState, FormEvent, useRef, useEffect } from 'react';
 import { Text } from 'src/ui/text';
 import { Select } from 'src/ui/select';
 import {
@@ -47,22 +47,40 @@ export const ArticleParamsForm = (props: ArticleParamsFormProps) => {
 		setAppState(defaultArticleState);
 	};
 
-	const handleOverlayClick = () => {
-		setIsMenuOpen(false);
+	const handleOverlayClick = (event: MouseEvent) => {
+		if (
+			sidebarRef.current &&
+			!sidebarRef.current.contains(event.target as Node)
+		) {
+			setIsMenuOpen(false);
+		}
 	};
 
 	const handleSidebarClick = (e: React.MouseEvent) => {
 		e.stopPropagation();
 	};
 
+	const handleToggleMenu = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		setIsMenuOpen((currentIsOpened) => !currentIsOpened);
+	};
+
+	useEffect(() => {
+		if (isMenuOpen) {
+			document.addEventListener('click', handleOverlayClick);
+		} else {
+			document.removeEventListener('click', handleOverlayClick);
+		}
+
+		return () => {
+			document.removeEventListener('click', handleOverlayClick);
+		};
+	}, [isMenuOpen]);
+
 	return (
 		<>
-			<ArrowButton
-				isOpen={isMenuOpen}
-				onClick={() => setIsMenuOpen((currentIsOpened) => !currentIsOpened)}
-			/>
+			<ArrowButton isOpen={isMenuOpen} onClick={handleToggleMenu} />
 			<div
-				onClick={handleOverlayClick}
 				className={`${styles.overlay} ${
 					isMenuOpen ? styles.overlay_open : ''
 				}`}></div>

@@ -8,7 +8,7 @@ export type OnClick = () => void;
 
 type ArrowButtonProps = {
 	isOpen: boolean;
-	onClick: OnClick;
+	onClick: (e: React.MouseEvent) => void;
 };
 
 export const ArrowButton = ({ isOpen, onClick }: ArrowButtonProps) => {
